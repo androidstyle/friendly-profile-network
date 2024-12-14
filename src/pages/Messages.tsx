@@ -23,11 +23,17 @@ interface Message {
 const Messages = () => {
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [newMessage, setNewMessage] = useState("");
+  const [currentUserId, setCurrentUserId] = useState<string | undefined>();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
 
-  const { data: session } = await supabase.auth.getSession();
-  const currentUserId = session?.session?.user?.id;
+  useEffect(() => {
+    const getSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setCurrentUserId(session?.user?.id);
+    };
+    getSession();
+  }, []);
 
   const { data: users } = useQuery({
     queryKey: ["users"],
@@ -39,6 +45,7 @@ const Messages = () => {
       if (error) throw error;
       return data as Profile[];
     },
+    enabled: !!currentUserId,
   });
 
   const { data: messages } = useQuery({
@@ -64,7 +71,7 @@ const Messages = () => {
       if (error) throw error;
       return data as Message[];
     },
-    enabled: !!selectedUser,
+    enabled: !!selectedUser && !!currentUserId,
   });
 
   const sendMessage = useMutation({

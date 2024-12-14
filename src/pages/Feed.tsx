@@ -29,11 +29,17 @@ interface Post {
 const Feed = () => {
   const [newPost, setNewPost] = useState("");
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [userId, setUserId] = useState<string | undefined>();
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
-  const { data: session } = await supabase.auth.getSession();
-  const userId = session?.session?.user?.id;
+  useEffect(() => {
+    const getSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setUserId(session?.user?.id);
+    };
+    getSession();
+  }, []);
 
   const { data: posts, isLoading } = useQuery({
     queryKey: ["posts"],
