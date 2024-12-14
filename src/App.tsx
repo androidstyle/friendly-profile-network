@@ -7,6 +7,7 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import AuthPage from "./pages/Auth";
 import Feed from "./pages/Feed";
 import Messages from "./pages/Messages";
+import Profile from "./pages/Profile";
 import MainLayout from "./components/MainLayout";
 
 const queryClient = new QueryClient();
@@ -41,9 +42,7 @@ const App = () => (
               path="/profile"
               element={
                 <MainLayout>
-                  <div className="flex items-center justify-center h-full">
-                    <p className="text-muted-foreground">Страница профиля в разработке</p>
-                  </div>
+                  <Profile />
                 </MainLayout>
               }
             />
