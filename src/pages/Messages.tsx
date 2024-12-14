@@ -1,18 +1,9 @@
 import { useEffect, useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { format } from "date-fns";
-import { Send } from "lucide-react";
+import { UserSelect } from "@/components/messages/UserSelect";
+import { MessageList } from "@/components/messages/MessageList";
+import { MessageInput } from "@/components/messages/MessageInput";
 
 interface Profile {
   id: string;
@@ -120,87 +111,26 @@ const Messages = () => {
   return (
     <div className="h-[calc(100vh-4rem)] flex flex-col p-4">
       <div className="mb-4">
-        <Select
-          value={selectedUser || ""}
-          onValueChange={(value) => setSelectedUser(value)}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Выберите собеседника" />
-          </SelectTrigger>
-          <SelectContent>
-            {users?.map((user) => (
-              <SelectItem key={user.id} value={user.id}>
-                <div className="flex items-center gap-2">
-                  <Avatar className="h-6 w-6">
-                    <AvatarImage src={user.avatar_url || undefined} />
-                    <AvatarFallback>
-                      {user.username?.[0]?.toUpperCase() || "U"}
-                    </AvatarFallback>
-                  </Avatar>
-                  {user.username}
-                </div>
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <UserSelect
+          users={users}
+          selectedUser={selectedUser}
+          onUserSelect={setSelectedUser}
+        />
       </div>
 
       {selectedUser ? (
         <>
-          <div className="flex-1 overflow-y-auto space-y-4 mb-4">
-            {messages?.map((message) => (
-              <div
-                key={message.id}
-                className={`flex items-start gap-2 ${
-                  message.sender_id === currentUserId
-                    ? "flex-row-reverse"
-                    : "flex-row"
-                }`}
-              >
-                <Avatar className="h-8 w-8">
-                  <AvatarImage
-                    src={message.profiles.avatar_url || undefined}
-                  />
-                  <AvatarFallback>
-                    {message.profiles.username?.[0]?.toUpperCase() || "U"}
-                  </AvatarFallback>
-                </Avatar>
-                <div
-                  className={`rounded-lg p-3 max-w-[70%] ${
-                    message.sender_id === currentUserId
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted"
-                  }`}
-                >
-                  <p className="break-words">{message.content}</p>
-                  <span className="text-xs opacity-70 mt-1 block">
-                    {format(new Date(message.created_at), "HH:mm")}
-                  </span>
-                </div>
-              </div>
-            ))}
-            <div ref={messagesEndRef} />
-          </div>
-          <div className="flex gap-2">
-            <Input
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              placeholder="Введите сообщение..."
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey && newMessage.trim()) {
-                  e.preventDefault();
-                  sendMessage.mutate();
-                }
-              }}
-            />
-            <Button
-              size="icon"
-              onClick={() => sendMessage.mutate()}
-              disabled={!newMessage.trim() || sendMessage.isPending}
-            >
-              <Send className="h-4 w-4" />
-            </Button>
-          </div>
+          <MessageList
+            messages={messages}
+            currentUserId={currentUserId}
+            messagesEndRef={messagesEndRef}
+          />
+          <MessageInput
+            newMessage={newMessage}
+            setNewMessage={setNewMessage}
+            onSend={() => sendMessage.mutate()}
+            isPending={sendMessage.isPending}
+          />
         </>
       ) : (
         <div className="flex-1 flex items-center justify-center text-muted-foreground">
