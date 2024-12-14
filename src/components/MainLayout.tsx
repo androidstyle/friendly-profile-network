@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
 import { Home, MessageCircle, LogOut } from "lucide-react";
+import { MobileNavigation } from "./MobileNavigation";
 
 const MainLayout = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
@@ -55,7 +56,8 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
           </SidebarGroup>
         </SidebarContent>
       </Sidebar>
-      <main className="flex-1 p-4">{children}</main>
+      <main className="flex-1 p-4 pb-20 md:pb-4">{children}</main>
+      <MobileNavigation />
     </div>
   );
 };

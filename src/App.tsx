@@ -37,6 +37,16 @@ const App = () => (
                 </MainLayout>
               }
             />
+            <Route
+              path="/profile"
+              element={
+                <MainLayout>
+                  <div className="flex items-center justify-center h-full">
+                    <p className="text-muted-foreground">Страница профиля в разработке</p>
+                  </div>
+                </MainLayout>
+              }
+            />
           </Routes>
         </BrowserRouter>
       </SidebarProvider>
